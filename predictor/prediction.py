@@ -43,7 +43,7 @@ current_index = 0
 target_letter = letters[current_index]
 
 # === Font setup
-FONT_PATH = "./fonts/Montserrat-Regular.ttf"  # Ensure this path exists
+FONT_PATH = "../fonts/Montserrat-Regular.ttf"  # Ensure this path exists
 FONT_LARGE = ImageFont.truetype(FONT_PATH, 40)
 FONT_MEDIUM = ImageFont.truetype(FONT_PATH, 30)
 FONT_SMALL = ImageFont.truetype(FONT_PATH, 24)
@@ -54,20 +54,32 @@ def draw_modern_ui(frame, target_letter, most_common, feedback, correct_count, a
     pil_img = Image.fromarray(frame_rgb)
     draw = ImageDraw.Draw(pil_img)
 
+    # Adjusted positions and sizes for UI elements
+    ui_x_start = 20
+    ui_y_start = 20
+    ui_width = 300
+    ui_height = 50
+    spacing = 10
+
     # Background Cards
-    draw.rectangle([(20, 20), (460, 90)], fill=(20, 20, 20))     # Letter
-    draw.rectangle([(20, 100), (460, 160)], fill=(20, 20, 20))   # Prediction
-    draw.rectangle([(20, 170), (460, 230)], fill=(20, 20, 20))   # Feedback
-    draw.rectangle([(20, 240), (460, 300)], fill=(20, 20, 20))   # Score
+    draw.rectangle([(ui_x_start, ui_y_start), (ui_x_start + ui_width, ui_y_start + ui_height)], fill=(20, 20, 20))  # Letter
+    draw.rectangle([(ui_x_start, ui_y_start + (ui_height + spacing)), 
+                    (ui_x_start + ui_width, ui_y_start + 2 * (ui_height + spacing))], fill=(20, 20, 20))  # Prediction
+    draw.rectangle([(ui_x_start, ui_y_start + 2 * (ui_height + spacing)), 
+                    (ui_x_start + ui_width, ui_y_start + 3 * (ui_height + spacing))], fill=(20, 20, 20))  # Feedback
+    draw.rectangle([(ui_x_start, ui_y_start + 3 * (ui_height + spacing)), 
+                    (ui_x_start + ui_width, ui_y_start + 4 * (ui_height + spacing))], fill=(20, 20, 20))  # Score
 
     # Content Text
-    draw.text((30, 30), f"Sign this letter: {target_letter}", font=FONT_LARGE, fill=(255, 255, 255))
-    draw.text((30, 110), f"Prediction: {most_common or '...'}", font=FONT_MEDIUM, fill=(161, 227, 166))
-    draw.text((30, 180), feedback, font=FONT_MEDIUM,
-              fill=(50, 220, 120) if "Correct" in feedback else (255, 80, 80))
+    draw.text((ui_x_start + 10, ui_y_start + 10), f"Sign: {target_letter}", font=FONT_MEDIUM, fill=(255, 255, 255))
+    draw.text((ui_x_start + 10, ui_y_start + ui_height + spacing + 10), f"Prediction: {most_common or '...'}", 
+              font=FONT_SMALL, fill=(161, 227, 166))
+    draw.text((ui_x_start + 10, ui_y_start + 2 * (ui_height + spacing) + 10), feedback, 
+              font=FONT_SMALL, fill=(50, 220, 120) if "Correct" in feedback else (255, 80, 80))
     
     accuracy = (correct_count / attempted) * 100 if attempted else 0
-    draw.text((30, 250), f"Score: {correct_count}/{attempted} ({accuracy:.1f}%)", font=FONT_SMALL, fill=(200, 200, 200))
+    draw.text((ui_x_start + 10, ui_y_start + 3 * (ui_height + spacing) + 10), 
+              f"Score: {correct_count}/{attempted} ({accuracy:.1f}%)", font=FONT_SMALL, fill=(200, 200, 200))
 
     return cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 
